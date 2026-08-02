@@ -1,3 +1,4 @@
+import re
 from enum import Enum
 from typing import override
 
@@ -83,3 +84,25 @@ def split_nodes_delimiter(
                 split_nodes.append(TextNode(sections[i], text_type))
         new_nodes.extend(split_nodes)
     return new_nodes
+
+
+def extract_markdown_images(text: str) -> list[tuple[str, str]]:
+    images: list[str] = re.findall(r"\!\[.+?\)", text)
+    tuples: list[tuple[str, str]] = []
+    for image in images:
+        alt: list[str] = re.findall(r"\[(.*?)\]", image)
+        url: list[str] = re.findall(r"\((.*?)\)", image)
+        tuples.append((alt[0], url[0]))
+
+    return tuples
+
+
+def extract_markdown_links(text: str) -> list[tuple[str, str]]:
+    links: list[str] = re.findall(r"(?<!!)\[.+?\)", text)
+    tuples: list[tuple[str, str]] = []
+    for link in links:
+        alt: list[str] = re.findall(r"\[(.+?)\]", link)
+        url: list[str] = re.findall(r"\((.+?)\)", link)
+        tuples.append((alt[0], url[0]))
+
+    return tuples

@@ -63,28 +63,6 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
             )  # pyright: ignore[reportUnreachable]
 
 
-def extract_markdown_images(text: str) -> list[tuple[str, str]]:
-    images: list[str] = re.findall(r"\!\[.+?\)", text)
-    tuples: list[tuple[str, str]] = []
-    for image in images:
-        alt: list[str] = re.findall(r"\[(.*?)\]", image)
-        url: list[str] = re.findall(r"\((.*?)\)", image)
-        tuples.append((alt[0], url[0]))
-
-    return tuples
-
-
-def extract_markdown_links(text: str) -> list[tuple[str, str]]:
-    links: list[str] = re.findall(r"(?<!!)\[.+?\)", text)
-    tuples: list[tuple[str, str]] = []
-    for link in links:
-        alt: list[str] = re.findall(r"\[(.+?)\]", link)
-        url: list[str] = re.findall(r"\((.+?)\)", link)
-        tuples.append((alt[0], url[0]))
-
-    return tuples
-
-
 def split_nodes_delimiter(
     old_nodes: list[TextNode], delimiter: str, text_type: TextType
 ) -> list[TextNode]:
@@ -106,6 +84,17 @@ def split_nodes_delimiter(
                 split_nodes.append(TextNode(sections[i], text_type))
         new_nodes.extend(split_nodes)
     return new_nodes
+
+
+def extract_markdown_images(text: str) -> list[tuple[str, str]]:
+    images: list[str] = re.findall(r"\!\[.+?\)", text)
+    tuples: list[tuple[str, str]] = []
+    for image in images:
+        alt: list[str] = re.findall(r"\[(.*?)\]", image)
+        url: list[str] = re.findall(r"\((.*?)\)", image)
+        tuples.append((alt[0], url[0]))
+
+    return tuples
 
 
 def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
@@ -138,6 +127,17 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
     return new_nodes
 
 
+def extract_markdown_links(text: str) -> list[tuple[str, str]]:
+    links: list[str] = re.findall(r"(?<!!)\[.+?\)", text)
+    tuples: list[tuple[str, str]] = []
+    for link in links:
+        alt: list[str] = re.findall(r"\[(.+?)\]", link)
+        url: list[str] = re.findall(r"\((.+?)\)", link)
+        tuples.append((alt[0], url[0]))
+
+    return tuples
+
+
 def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     for old_node in old_nodes:
@@ -159,4 +159,28 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             original_text = sections[1]
         if original_text != "":
             new_nodes.append(TextNode(original_text, TextType.TEXT))
+    return new_nodes
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    original_text = [TextNode(text, TextType.TEXT)]
+
+    new_nodes: list[TextNode] = []
+    for line in original_text:
+        new_nodes.extend(
+            split_nodes_link(
+                split_nodes_image(
+                    split_nodes_delimiter(
+                        split_nodes_delimiter(
+                            split_nodes_delimiter([line], "**", TextType.BOLD),
+                            "_",
+                            TextType.ITALIC,
+                        ),
+                        "`",
+                        TextType.CODE,
+                    )
+                )
+            )
+        )
+
     return new_nodes

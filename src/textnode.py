@@ -166,21 +166,20 @@ def text_to_textnodes(text: str) -> list[TextNode]:
     original_text = [TextNode(text, TextType.TEXT)]
 
     new_nodes: list[TextNode] = []
-    for line in original_text:
-        new_nodes.extend(
-            split_nodes_link(
-                split_nodes_image(
+    new_nodes.extend(
+        split_nodes_link(
+            split_nodes_image(
+                split_nodes_delimiter(
                     split_nodes_delimiter(
-                        split_nodes_delimiter(
-                            split_nodes_delimiter([line], "**", TextType.BOLD),
-                            "_",
-                            TextType.ITALIC,
-                        ),
-                        "`",
-                        TextType.CODE,
-                    )
+                        split_nodes_delimiter(original_text, "**", TextType.BOLD),
+                        "_",
+                        TextType.ITALIC,
+                    ),
+                    "`",
+                    TextType.CODE,
                 )
             )
         )
+    )
 
     return new_nodes

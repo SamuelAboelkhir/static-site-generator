@@ -97,6 +97,17 @@ def extract_markdown_images(text: str) -> list[tuple[str, str]]:
     return tuples
 
 
+def extract_title(markdown: str):
+    lines = markdown.split("\n")
+    title = ""
+    for line in lines:
+        if line.startswith("#"):
+            title = line
+    if title == "":
+        raise Exception("No title found")
+    return title.removeprefix("#").strip()
+
+
 def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     for old_node in old_nodes:

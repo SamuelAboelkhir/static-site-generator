@@ -1,8 +1,7 @@
 from enum import Enum
 
 from htmlnode import HTMLNode, ParentNode
-from textnode import (TextNode, TextType, text_node_to_html_node,
-                      text_to_textnodes)
+from textnode import TextNode, TextType, text_node_to_html_node, text_to_textnodes
 
 
 class BlockType(Enum):

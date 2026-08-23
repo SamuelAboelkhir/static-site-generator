@@ -12,7 +12,7 @@ template_path = "./template.html"
 
 def main() -> None:
     basePath = "/"
-    if len(sys.argv) > 0:
+    if len(sys.argv) > 1:
         basePath = sys.argv[1]
     static_to_public(basePath)
 

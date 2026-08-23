@@ -36,7 +36,7 @@ def static_to_public(basePath: str):
         files = find_files(dir_path_static)
         for file in files:
             file_split = file.split("/")
-            file_split[1] = "public"
+            file_split[1] = "docs"
             file_split[-1] = ""
             destination = "/".join(file_split)
             os.makedirs(destination, exist_ok=True)
